@@ -102,7 +102,7 @@ pub const ShaderCompileStep = struct {
 
         const self = builder.allocator.create(ShaderCompileStep) catch unreachable;
         self.* = .{
-            .step = Step.init(.Custom, "shader-compile", builder.allocator, make),
+            .step = Step.init(.custom, "shader-compile", builder.allocator, make),
             .builder = builder,
             .shdc_cmd = &[_][]const u8{ "." ++ path.sep_str ++ prefix_path ++ "bin" ++ path.sep_str ++ shdc_binary, "-d", "-l", "glsl330:metal_macos", "-f", "bare", "-i" },
             .shader = options.shader,
@@ -255,9 +255,9 @@ pub const ShaderCompileStep = struct {
 
         var iter = parsed.snippet_reflection_map.iterator();
         while (iter.next()) |entry| {
-            const reflection: ReflectionData = entry.value;
+            const reflection: ReflectionData = entry.value_ptr.*;
             if (reflection.uniform_block) |uniform| {
-                try self.generateUniformBlockStruct(reflection, uniform, parsed, writer);
+                try generateUniformBlockStruct(reflection, uniform, parsed, writer);
             }
         }
 
@@ -280,7 +280,7 @@ pub const ShaderCompileStep = struct {
 
         while (try walker.next()) |entry| {
             if (entry.kind != .File) continue;
-            if (std.mem.indexOf(u8, entry.basename, "_vs")) |vs_index| {
+            if (std.mem.indexOf(u8, entry.basename, "_vs")) |_| {
                 // if this shader isnt a unique vert program delete it
                 const shader_stage_name = entry.basename[0..std.mem.lastIndexOf(u8, entry.basename, ".").?];
                 const shader_name = shader_stage_name[0 .. shader_stage_name.len - 3];
@@ -312,7 +312,7 @@ pub const ShaderCompileStep = struct {
 
     /// generates the uniform block struct. Care is taken here to align all the struct fields to match the graphics
     /// specs and also pad them out correctly. Only floats are suported for struct members because of this.
-    fn generateUniformBlockStruct(self: *ShaderCompileStep, reflection: ReflectionData, block: UniformBlock, parsed: *ShdcParser, writer: std.ArrayList(u8).Writer) !void {
+    fn generateUniformBlockStruct(reflection: ReflectionData, block: UniformBlock, parsed: *ShdcParser, writer: std.ArrayList(u8).Writer) !void {
         const next_align16 = nextHighestAlign16(block.size);
         // warn("{}, size: {}, aligned size: {}", .{ block.name, block.size, next_align16 });
 

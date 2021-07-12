@@ -31,12 +31,13 @@ pub fn Handles(comptime HandleType: type, comptime IndexType: type, comptime Ver
         pub fn deinit(self: Self) void {
             self.allocator.free(self.handles);
         }
-
         pub fn extractIndex(self: Self, handle: HandleType) IndexType {
+            _ = self;
             return @truncate(IndexType, handle);
         }
 
         pub fn extractVersion(self: Self, handle: HandleType) VersionType {
+            _ = self;
             return @truncate(VersionType, handle >> @bitSizeOf(IndexType));
         }
 

@@ -20,7 +20,7 @@ pub const RendererDesc = extern struct {
     metal: MetalSetup = .{},
 };
 
-pub const ImageDesc = extern struct {
+pub const ImageDesc = struct {
     render_target: bool = false,
     width: i32,
     height: i32,
@@ -39,7 +39,7 @@ pub const PassDesc = struct {
 };
 
 /// whether the pointer is advanced "per vertex" or "per instance". The latter is used for instanced rendering.
-pub const VertexStep = extern enum {
+pub const VertexStep = enum {
     per_vertex,
     per_instance,
 };

@@ -140,14 +140,14 @@ pub fn loadFunctionsZig() void {
     };
     defer dynlib.close();
 
-    inline for (@typeInfo(Funcs).Struct.fields) |field, i| {
+    inline for (@typeInfo(Funcs).Struct.fields) |field| {
         @field(gl, field.name) = dynlib.lookup(field.field_type, field.name ++ &[_:0]u8{0}).?;
     }
 }
 
 /// loader is a GL function loader, for example SDL_GL_GetProcAddress or glfwGetProcAddress
 pub fn loadFunctions(loader: fn ([*c]const u8) callconv(.C) ?*c_void) void {
-    inline for (@typeInfo(Funcs).Struct.fields) |field, i| {
+    inline for (@typeInfo(Funcs).Struct.fields) |field| {
         @field(gl, field.name) = @ptrCast(field.field_type, loader(field.name ++ &[_]u8{0}));
     }
 }

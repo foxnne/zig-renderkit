@@ -11,7 +11,7 @@ var renderer: ?Renderer = null;
 pub fn getRenderKitPackage(comptime prefix_path: []const u8) Pkg {
     return .{
         .name = "renderkit",
-        .path = prefix_path ++ "renderkit/renderkit.zig",
+        .path = .{ .path = prefix_path ++ "renderkit/renderkit.zig"},
     };
 }
 
@@ -26,7 +26,7 @@ pub fn addRenderKitToArtifact(b: *Builder, exe: *std.build.LibExeObjStep, target
     exe.addBuildOption(Renderer, "renderer", renderer.?);
 
     // renderer specific linkage
-    if (target.isDarwin()) addMetalToArtifact(b, exe, target, prefix_path);
+    if (target.isDarwin()) addMetalToArtifact(b, exe, prefix_path);
     addOpenGlToArtifact(exe, target);
 
     exe.addPackage(getRenderKitPackage(prefix_path));
@@ -45,7 +45,7 @@ fn addOpenGlToArtifact(artifact: *std.build.LibExeObjStep, target: std.build.Tar
     }
 }
 
-fn addMetalToArtifact(b: *Builder, exe: *std.build.LibExeObjStep, target: std.build.Target, comptime prefix_path: []const u8) void {
+fn addMetalToArtifact(b: *Builder, exe: *std.build.LibExeObjStep, comptime prefix_path: []const u8) void {
     const frameworks_dir = macosFrameworksDir(b) catch unreachable;
     exe.addFrameworkDir(frameworks_dir);
     exe.linkFramework("Foundation");

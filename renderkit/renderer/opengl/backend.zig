@@ -393,7 +393,7 @@ pub fn createBuffer(comptime T: type, desc: BufferDesc(T)) Buffer {
         buffer.setVertexAttributes = struct {
             fn cb(attr_index: *GLuint, step_func: GLuint, vertex_buffer_offset: u32) void {
                 inline for (@typeInfo(T).Struct.fields) |field, i| {
-                    const offset: ?usize = if (i + vertex_buffer_offset == 0) null else vertex_buffer_offset + @byteOffsetOf(T, field.name);
+                    const offset: ?usize = if (i + vertex_buffer_offset == 0) null else vertex_buffer_offset + @offsetOf(T, field.name);
 
                     switch (@typeInfo(field.field_type)) {
                         .Int => |type_info| {
@@ -609,7 +609,7 @@ pub fn createShaderProgram(comptime VertUniformT: type, comptime FragUniformT: t
     inline for (.{ VertUniformT, FragUniformT }) |UniformT| {
         if (@hasDecl(UniformT, "metadata") and @hasField(@TypeOf(UniformT.metadata), "images")) {
             var image_slot: GLint = 0;
-            inline for (@field(UniformT.metadata, "images")) |img, i| {
+            inline for (@field(UniformT.metadata, "images")) |img| {
                 const loc = glGetUniformLocation(id, img);
                 if (loc != 1) {
                     glUniform1i(loc, image_slot);

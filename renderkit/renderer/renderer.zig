@@ -42,7 +42,9 @@ pub const Renderer = enum {
 };
 
 // import our chosen backend renderer
-const backend = @import(@tagName(@import("../renderkit.zig").current_renderer) ++ "/backend.zig");
+// TODO:import must be a string literal now...
+//const backend = @import(@tagName(@import("../renderkit.zig").current_renderer) ++ "/backend.zig");
+const backend = @import("opengl/backend.zig");
 
 // setup and state
 pub fn setup(desc: RendererDesc) void {
